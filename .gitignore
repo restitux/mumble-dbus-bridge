@@ -33,3 +33,7 @@
 
 # Build directory
 build/*
+
+# clangd Files
+.cache
+compile_commands.json

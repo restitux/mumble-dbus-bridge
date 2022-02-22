@@ -21,6 +21,10 @@ target_include_directories(plugin
 	PUBLIC "${CMAKE_SOURCE_DIR}/include/"
 )
 
+target_link_libraries(plugin
+  PUBLIC "systemd"
+)
+
 # Add suffix for the respective OS
 if (WIN32)
 	set(PLUGIN_NAME "${PLUGIN_NAME}_win")
