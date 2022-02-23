@@ -73,6 +73,30 @@ static int method_ToggleDeaf(sd_bus_message *m, void *userdata,
     return sd_bus_reply_method_return(m, "");
 }
 
+static int method_TogglePTTOrVA(sd_bus_message *m, void *userdata,
+                                sd_bus_error *ret_error) {
+
+    mumble_transmission_mode_t transmission_mode;
+
+    mumbleAPI.getLocalUserTransmissionMode(ownID, &transmission_mode);
+
+    switch (transmission_mode) {
+    case MUMBLE_TM_VOICE_ACTIVATION:
+        mumble_log("Setting transmission mode to Voice Activation");
+        mumbleAPI.requestLocalUserTransmissionMode(ownID,
+                                                   MUMBLE_TM_PUSH_TO_TALK);
+        break;
+    case MUMBLE_TM_PUSH_TO_TALK:
+        mumble_log("Setting transmission mode to Push To Talk");
+        mumbleAPI.requestLocalUserTransmissionMode(ownID,
+                                                   MUMBLE_TM_VOICE_ACTIVATION);
+        break;
+    default:
+        break;
+    }
+    return sd_bus_reply_method_return(m, "");
+}
+
 // DBus vtable for defining exposed methods
 static const sd_bus_vtable vtable[] = {
     SD_BUS_VTABLE_START(0),
@@ -81,6 +105,8 @@ static const sd_bus_vtable vtable[] = {
     SD_BUS_METHOD("ToggleMute", "", "", method_ToggleMute,
                   SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("ToggleDeaf", "", "", method_ToggleDeaf,
+                  SD_BUS_VTABLE_UNPRIVILEGED),
+    SD_BUS_METHOD("TogglePPTOrVA", "", "", method_TogglePTTOrVA,
                   SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_VTABLE_END};
 
