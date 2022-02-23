@@ -60,12 +60,27 @@ static int method_ToggleMute(sd_bus_message *m, void *userdata,
     return sd_bus_reply_method_return(m, "");
 }
 
+static int method_ToggleDeaf(sd_bus_message *m, void *userdata,
+                             sd_bus_error *ret_error) {
+    // Get current mute status
+
+    bool deaf_status;
+    mumbleAPI.isLocalUserDeafened(ownID, &deaf_status);
+
+    mumble_log("Setting deaf status to %s", !deaf_status ? "true" : "false");
+    mumbleAPI.requestLocalUserDeaf(ownID, !deaf_status);
+
+    return sd_bus_reply_method_return(m, "");
+}
+
 // DBus vtable for defining exposed methods
 static const sd_bus_vtable vtable[] = {
     SD_BUS_VTABLE_START(0),
     SD_BUS_METHOD("SetMute", "(b)", "", method_SetMute,
                   SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("ToggleMute", "", "", method_ToggleMute,
+                  SD_BUS_VTABLE_UNPRIVILEGED),
+    SD_BUS_METHOD("ToggleDeaf", "", "", method_ToggleDeaf,
                   SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_VTABLE_END};
 
